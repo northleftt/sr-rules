@@ -1,0 +1,30 @@
+name: Update CN direct list
+on:
+  schedule:
+    - cron: "23 3 * * 1"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Convert
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/direct.txt -o /tmp/direct.txt
+          {
+            echo "# 国内域名直连列表（由 Loyalsoldier direct.txt 转换，Actions 每周自动更新）"
+            grep -vE '^\s*(#|$)' /tmp/direct.txt | awk '{print "DOMAIN-SUFFIX," $0}'
+          } > sr/china-direct.list
+          {
+            echo "payload:"
+            grep -vE '^\s*(#|$)' /tmp/direct.txt | awk '{print "  - \x27+." $0 "\x27"}'
+          } > mihomo/china-direct.yaml
+      - name: Commit
+        run: |
+          git config user.name "rules-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add sr/china-direct.list mihomo/china-direct.yaml
+          git diff --cached --quiet || git commit -m "chore: weekly refresh china-direct list"
+          git push
