@@ -47,6 +47,7 @@ dns:
     - "+.kitahidari.com"
     - "+.pixelsieve.com"
     - "+.lody.ai"
+    - "+.ts.net"
 
 rule-providers:
   adblock:
@@ -114,10 +115,12 @@ rules:
   - IP-CIDR,57.181.10.6/32,DIRECT,no-resolve
   - IP-CIDR,154.17.224.11/32,DIRECT,no-resolve
   - DOMAIN-SUFFIX,argotunnel.com,DIRECT
-  # --- Tailscale 网段直连（桌面端语义）---
+  # --- Tailscale 共存（网段/MagicDNS/DERP/默认WireGuard端口直连）---
   - IP-CIDR,100.64.0.0/10,DIRECT,no-resolve
-  - DOMAIN-SUFFIX,hs.oproxy.world,DIRECT
   - DOMAIN-SUFFIX,ts.net,DIRECT
+  - DOMAIN-SUFFIX,tailscale.com,DIRECT
+  - DOMAIN-SUFFIX,hs.oproxy.world,DIRECT
+  - AND,(NETWORK,UDP),(DST-PORT,41641),DIRECT
   # --- STUN/WebRTC 走代理（保功能防泄露；如需彻底禁用改为 REJECT）---
   - AND,(NETWORK,UDP),(DST-PORT,3478),🚀 节点选择
   - AND,(NETWORK,UDP),(DST-PORT,5349),🚀 节点选择
