@@ -1,0 +1,144 @@
+# ============================================================
+# Remnawave Mihomo 订阅模板（手动维护版）
+# 规则集托管: github.com/northleftt/sr-rules
+# ============================================================
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: warning
+ipv6: false
+unified-delay: true
+external-controller: 127.0.0.1:9090
+
+dns:
+  enable: true
+  use-hosts: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  default-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+    - system
+  nameserver:
+    - https://dns.alidns.com/dns-query
+    - https://doh.pub/dns-query
+  proxy-server-nameserver:
+    - https://dns.alidns.com/dns-query
+  nameserver-policy:
+    "rule-set:direct-extra,geosite-cn":
+      - https://dns.alidns.com/dns-query
+      - https://doh.pub/dns-query
+  fake-ip-filter:
+    - "*.lan"
+    - "*.local"
+    - stun.*.*.*
+    - stun.*.*
+    - time.windows.com
+    - time.nist.gov
+    - time.apple.com
+    - time.asia.apple.com
+    - pool.ntp.org
+    - ntp.ubuntu.com
+    - "*.msftconnecttest.com"
+    - "*.msftncsi.com"
+    - "+.xboxlive.com"
+    - "*.ipv6.microsoft.com"
+    # 自有域名强制真实解析（防节点域名 fake-ip 回环）
+    - "+.kitahidari.com"
+    - "+.pixelsieve.com"
+    - "+.lody.ai"
+
+rule-providers:
+  adblock:
+    type: http
+    behavior: domain
+    format: yaml
+    url: https://raw.githubusercontent.com/northleftt/sr-rules/main/mihomo/adblock.yaml
+    path: ./rule-sets/adblock.yaml
+    interval: 86400
+  direct-extra:
+    type: http
+    behavior: domain
+    format: yaml
+    url: https://raw.githubusercontent.com/northleftt/sr-rules/main/mihomo/direct-extra.yaml
+    path: ./rule-sets/direct-extra.yaml
+    interval: 86400
+  geosite-cn:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/cn.mrs
+    path: ./rule-sets/geosite-cn.mrs
+    interval: 86400
+  geoip-cn:
+    type: http
+    behavior: ipcidr
+    format: mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/cn.mrs
+    path: ./rule-sets/geoip-cn.mrs
+    interval: 86400
+  geosite-private:
+    type: http
+    behavior: domain
+    format: mrs
+    url: https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/private.mrs
+    path: ./rule-sets/geosite-private.mrs
+    interval: 86400
+
+proxies: # LEAVE THIS LINE!
+
+proxy-groups:
+  - name: "🚀 节点选择"
+    type: select
+    proxies:
+      - "♻️ 自动选择" # LEAVE THIS LINE!
+  - name: "♻️ 自动选择"
+    type: url-test
+    tolerance: 100
+    interval: 300
+    proxies: # LEAVE THIS LINE!
+  - name: "🐋 APNs推送"
+    type: fallback
+    interval: 300
+    proxies:
+      - "🚀 节点选择"
+      - DIRECT
+
+rules:
+  # ===== 手动规则区（与 SR 配置同步维护）=====
+  # --- 直连补丁 ---
+  - DOMAIN-SUFFIX,lody.ai,DIRECT
+  - DOMAIN-SUFFIX,drive.shutf.com,DIRECT
+  - DOMAIN-SUFFIX,kitahidari.com,DIRECT
+  - DOMAIN-SUFFIX,pixelsieve.com,DIRECT
+  - IP-CIDR,57.181.10.6/32,DIRECT,no-resolve
+  - IP-CIDR,154.17.224.11/32,DIRECT,no-resolve
+  - DOMAIN-SUFFIX,argotunnel.com,DIRECT
+  # --- Tailscale 网段直连（桌面端语义）---
+  - IP-CIDR,100.64.0.0/10,DIRECT,no-resolve
+  - DOMAIN-SUFFIX,hs.oproxy.world,DIRECT
+  - DOMAIN-SUFFIX,ts.net,DIRECT
+  # --- WebRTC/STUN 阻断（防泄露，需要时注释掉）---
+  - AND,(NETWORK,UDP),(DST-PORT,3478),REJECT
+  - AND,(NETWORK,UDP),(DST-PORT,5349),REJECT
+  # --- APNs 推送走代理（fallback 带 DIRECT 兜底）---
+  - DOMAIN-SUFFIX,push.apple.com,🐋 APNs推送
+  - DOMAIN-SUFFIX,akadns.net,🐋 APNs推送
+  - DOMAIN-KEYWORD,apple.com.edgekey.net,🐋 APNs推送
+  - IP-CIDR,17.249.0.0/16,🐋 APNs推送,no-resolve
+  - IP-CIDR,17.252.0.0/16,🐋 APNs推送,no-resolve
+  - IP-CIDR,17.57.144.0/22,🐋 APNs推送,no-resolve
+  - IP-CIDR,17.188.128.0/18,🐋 APNs推送,no-resolve
+  - IP-CIDR,17.188.20.0/23,🐋 APNs推送,no-resolve
+  # --- 未被封但慢 / 需伪装 → 代理 ---
+  - DOMAIN-SUFFIX,cloudflare.com,🚀 节点选择
+  - DOMAIN-SUFFIX,godaddy.com,🚀 节点选择
+  - DOMAIN-SUFFIX,claude.ai,🚀 节点选择
+  - DOMAIN-SUFFIX,anthropic.com,🚀 节点选择
+  # ===== 手动规则区结束 =====
+  - RULE-SET,adblock,REJECT
+  - RULE-SET,direct-extra,DIRECT
+  - RULE-SET,geosite-private,DIRECT
+  - RULE-SET,geosite-cn,DIRECT
+  - RULE-SET,geoip-cn,DIRECT,no-resolve
+  - MATCH,🚀 节点选择
