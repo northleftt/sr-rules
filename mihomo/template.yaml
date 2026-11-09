@@ -118,9 +118,9 @@ rules:
   - IP-CIDR,100.64.0.0/10,DIRECT,no-resolve
   - DOMAIN-SUFFIX,hs.oproxy.world,DIRECT
   - DOMAIN-SUFFIX,ts.net,DIRECT
-  # --- WebRTC/STUN 阻断（防泄露，需要时注释掉）---
-  - AND,(NETWORK,UDP),(DST-PORT,3478),REJECT
-  - AND,(NETWORK,UDP),(DST-PORT,5349),REJECT
+  # --- STUN/WebRTC 走代理（保功能防泄露；如需彻底禁用改为 REJECT）---
+  - AND,(NETWORK,UDP),(DST-PORT,3478),🚀 节点选择
+  - AND,(NETWORK,UDP),(DST-PORT,5349),🚀 节点选择
   # --- APNs 推送走代理（fallback 带 DIRECT 兜底）---
   - DOMAIN-SUFFIX,push.apple.com,🐋 APNs推送
   - DOMAIN-SUFFIX,akadns.net,🐋 APNs推送
