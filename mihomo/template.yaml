@@ -151,11 +151,33 @@ rules:
   - IP-CIDR,17.57.144.0/22,🐋 APNs推送,no-resolve
   - IP-CIDR,17.188.128.0/18,🐋 APNs推送,no-resolve
   - IP-CIDR,17.188.20.0/23,🐋 APNs推送,no-resolve
-  # --- 强制走代理 ---
+  # --- 强制走代理（含 Claude 全系主域名、遥测与官方自治系统网段，服务端已统一锚定纽约家宽）---
   - DOMAIN-SUFFIX,cloudflare.com,🚀 节点选择
   - DOMAIN-SUFFIX,godaddy.com,🚀 节点选择
-  - DOMAIN-SUFFIX,claude.ai,🚀 节点选择
   - DOMAIN-SUFFIX,anthropic.com,🚀 节点选择
+  - DOMAIN-SUFFIX,claude.ai,🚀 节点选择
+  - DOMAIN-SUFFIX,claude.com,🚀 节点选择
+  - DOMAIN-SUFFIX,claudeusercontent.com,🚀 节点选择
+  - DOMAIN-SUFFIX,claudemcpcontent.com,🚀 节点选择
+  - DOMAIN-SUFFIX,claudemcpclient.com,🚀 节点选择
+  - DOMAIN-SUFFIX,claude.app,🚀 节点选择
+  - DOMAIN-SUFFIX,claudestudio.com,🚀 节点选择
+  - DOMAIN-SUFFIX,clau.de,🚀 节点选择
+  - DOMAIN-SUFFIX,ant.dev,🚀 节点选择
+  - DOMAIN-SUFFIX,modelcontextprotocol.io,🚀 节点选择
+  - DOMAIN,o1158394.ingest.us.sentry.io,🚀 节点选择
+  - DOMAIN,browser-intake-us5-datadoghq.com,🚀 节点选择
+  - DOMAIN,http-intake.logs.us5.datadoghq.com,🚀 节点选择
+  - DOMAIN,cdn.growthbook.io,🚀 节点选择
+  - DOMAIN,cdn.usefathom.com,🚀 节点选择
+  - DOMAIN-SUFFIX,statsig.com,🚀 节点选择
+  - DOMAIN-SUFFIX,statsigapi.net,🚀 节点选择
+  - DOMAIN-SUFFIX,featuregates.org,🚀 节点选择
+  - DOMAIN-SUFFIX,featureflags.com,🚀 节点选择
+  - DOMAIN-SUFFIX,intercom.io,🚀 节点选择
+  - DOMAIN-SUFFIX,intercomcdn.com,🚀 节点选择
+  - IP-CIDR,160.79.104.0/21,🚀 节点选择,no-resolve
+  - IP-CIDR6,2607:6bc0::/48,🚀 节点选择,no-resolve
   # ===== 手动规则区结束 =====
   - RULE-SET,adblock,REJECT
   - RULE-SET,geosite-private,DIRECT
