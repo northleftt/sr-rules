@@ -119,7 +119,6 @@ proxy-groups:
   - name: "🐋 APNs推送"
     type: fallback
     interval: 300
-    exclude-filter: "(?i)webshare|residential"
     proxies:
       - "🚀 节点选择"
       - DIRECT
