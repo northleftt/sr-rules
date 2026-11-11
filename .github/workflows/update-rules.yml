@@ -14,17 +14,13 @@ jobs:
         run: |
           curl -fsSL https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/direct.txt -o /tmp/direct.txt
           {
-            echo "# 国内域名直连列表（由 Loyalsoldier direct.txt 转换，Actions 每周自动更新）"
-            grep -vE '^\s*(#|$)' /tmp/direct.txt | sed 's/^\.//' | awk '{print "DOMAIN-SUFFIX," $0}'
+            echo "# 国内域名直连列表（由 Loyalsoldier direct.txt 转换，区分精确域名与后缀，Actions 每周自动更新）"
+            awk '/^[[:space:]]*(#|$)/ { next } /^\./ { print "DOMAIN-SUFFIX," substr($0, 2); next } { print "DOMAIN," $0 }' /tmp/direct.txt
           } > sr/china-direct.list
-          {
-            echo "payload:"
-            grep -vE '^\s*(#|$)' /tmp/direct.txt | sed 's/^\.//' | awk '{print "  - \x27+." $0 "\x27"}'
-          } > mihomo/china-direct.yaml
       - name: Commit
         run: |
           git config user.name "rules-bot"
           git config user.email "bot@users.noreply.github.com"
-          git add sr/china-direct.list mihomo/china-direct.yaml
+          git add sr/china-direct.list
           git diff --cached --quiet || git commit -m "chore: weekly refresh china-direct list"
           git push
