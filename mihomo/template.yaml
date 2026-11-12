@@ -57,8 +57,9 @@ dns:
     - "*.msftncsi.com"
     - "+.xboxlive.com"
     - "*.ipv6.microsoft.com"
-    # 自有域名强制真实解析（防节点域名 fake-ip 回环）
+    # 自有域名与隧道基础设施强制真实解析（防节点域名与隧道 fake-ip 回环）
     - "+.kitahidari.com"
+    - "+.argotunnel.com"
     - "+.pixelsieve.com"
     - "+.lody.ai"
     - "+.drive.shutf.com"
@@ -125,14 +126,18 @@ proxy-groups:
 
 rules:
   # ===== 手动规则区（与 SR 配置同步维护）=====
-  # --- 直连补丁 ---
+  # --- 直连补丁（kitahidari.com 仅放行节点与订阅/面板基础设施，橙云/隧道子域顺延走代理）---
   - DOMAIN-SUFFIX,lody.ai,DIRECT
   - DOMAIN-SUFFIX,drive.shutf.com,DIRECT
-  - DOMAIN-SUFFIX,kitahidari.com,DIRECT
+  - DOMAIN,us.kitahidari.com,DIRECT
+  - DOMAIN,jp.kitahidari.com,DIRECT
+  - DOMAIN,remna-sub.kitahidari.com,DIRECT
+  - DOMAIN,remna.kitahidari.com,DIRECT
+  - DOMAIN,sub.kitahidari.com,DIRECT
+  - DOMAIN,panel.kitahidari.com,DIRECT
   - DOMAIN-SUFFIX,pixelsieve.com,DIRECT
   - IP-CIDR,57.181.10.6/32,DIRECT,no-resolve
   - IP-CIDR,154.17.224.11/32,DIRECT,no-resolve
-  - DOMAIN-SUFFIX,argotunnel.com,DIRECT
   # --- Tailscale 共存（网段/MagicDNS/DERP/默认WireGuard端口直连）---
   - IP-CIDR,100.64.0.0/10,DIRECT,no-resolve
   - DOMAIN-SUFFIX,ts.net,DIRECT
@@ -151,8 +156,9 @@ rules:
   - IP-CIDR,17.57.144.0/22,🐋 APNs推送,no-resolve
   - IP-CIDR,17.188.128.0/18,🐋 APNs推送,no-resolve
   - IP-CIDR,17.188.20.0/23,🐋 APNs推送,no-resolve
-  # --- 强制走代理（含 Claude 全系主域名、遥测与官方自治系统网段，服务端已统一锚定纽约家宽）---
+  # --- 强制走代理（含 Cloudflare 隧道及 Claude 全系主域名、遥测与官方自治系统网段）---
   - DOMAIN-SUFFIX,cloudflare.com,🚀 节点选择
+  - DOMAIN-SUFFIX,argotunnel.com,🚀 节点选择
   - DOMAIN-SUFFIX,godaddy.com,🚀 节点选择
   - DOMAIN-SUFFIX,anthropic.com,🚀 节点选择
   - DOMAIN-SUFFIX,claude.ai,🚀 节点选择
